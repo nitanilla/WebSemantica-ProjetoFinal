@@ -1,0 +1,4737 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: col_agencias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_agencias (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    codigo character(3) NOT NULL,
+    descricao character varying(60) NOT NULL,
+    uf character(2),
+    classificacao character(1) NOT NULL,
+    podealterar smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_agencias OWNER TO postgres;
+
+--
+-- Name: col_areas_avaliacao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_areas_avaliacao (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character(60) NOT NULL,
+    criteriosconsistentes boolean NOT NULL,
+    perfildeexcelencia text
+);
+
+
+ALTER TABLE public.col_areas_avaliacao OWNER TO postgres;
+
+--
+-- Name: col_avaliacao_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_avaliacao_header (
+    anobase smallint NOT NULL,
+    descricaoperiodoavaliacao character(15) NOT NULL,
+    pesominimoquesito numeric(10,2) NOT NULL,
+    pesomaximoquesito numeric(10,2) NOT NULL,
+    escalaquesito smallint NOT NULL,
+    grupodddwcoerencia smallint NOT NULL,
+    grupodddwcompletude smallint NOT NULL,
+    grupodddwsituacao smallint NOT NULL,
+    grupodddwaspecto smallint NOT NULL,
+    grupodddwponderaveis smallint NOT NULL,
+    idusuariohomologacao character(15),
+    datahomologacao timestamp without time zone
+);
+
+
+ALTER TABLE public.col_avaliacao_header OWNER TO postgres;
+
+--
+-- Name: col_composicao_areas_avaliacao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_composicao_areas_avaliacao (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idareabasica character(8) NOT NULL
+);
+
+
+ALTER TABLE public.col_composicao_areas_avaliacao OWNER TO postgres;
+
+--
+-- Name: col_conceitos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_conceitos (
+    grupo smallint NOT NULL,
+    mnemonico character(2) NOT NULL,
+    descricao character(15) NOT NULL,
+    ordem smallint NOT NULL,
+    ordemdisplay smallint NOT NULL,
+    valor numeric(10,2) NOT NULL,
+    valorminimo numeric(10,2) NOT NULL,
+    valormaximo numeric(10,2) NOT NULL
+);
+
+
+ALTER TABLE public.col_conceitos OWNER TO postgres;
+
+--
+-- Name: col_cursos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_cursos (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    codigo character(13) NOT NULL,
+    idiespais character(8),
+    rdnpartecodigo character(11),
+    rdndv character(1),
+    nome character varying(60) NOT NULL,
+    idpessoalcoordenador integer,
+    anoinicio smallint NOT NULL,
+    creditosdisciplinas real NOT NULL,
+    creditosteses real,
+    creditosoutros real,
+    equivalenciacredcargahoraria smallint NOT NULL,
+    epocainscricao character(1),
+    mesesinscricao character varying(40),
+    epocaselecao character(1),
+    mesesselecao character varying(40)
+);
+
+
+ALTER TABLE public.col_cursos OWNER TO postgres;
+
+--
+-- Name: col_discentes_autores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_discentes_autores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    niveltitulacao character(1) NOT NULL,
+    bolsa character(1),
+    agencia character(3),
+    datamatricula timestamp without time zone,
+    status character(1),
+    datastatus timestamp without time zone
+);
+
+
+ALTER TABLE public.col_discentes_autores OWNER TO postgres;
+
+--
+-- Name: col_disciplinas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_disciplinas (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer NOT NULL,
+    nivel character(1),
+    sigla character(7) NOT NULL,
+    numero character(7) NOT NULL,
+    nome character varying(60) NOT NULL,
+    numerocreditos real NOT NULL,
+    ultseqturma integer NOT NULL,
+    niveis integer NOT NULL
+);
+
+
+ALTER TABLE public.col_disciplinas OWNER TO postgres;
+
+--
+-- Name: col_disciplinas_extensao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_disciplinas_extensao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    iddisciplina smallint NOT NULL,
+    ementa text,
+    bibliografia text
+);
+
+
+ALTER TABLE public.col_disciplinas_extensao OWNER TO postgres;
+
+--
+-- Name: col_docentes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_docentes (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    numeroorientandosprojetofinal smallint,
+    numeroorientandosiniccientif smallint,
+    numeroorientandostutoria smallint,
+    numeroorientandosoutros smallint,
+    cargahorariaanualgraduacao smallint,
+    numerodisciplinas smallint,
+    numeroorientandosmestrado smallint,
+    numeroorientandosdoutorado smallint,
+    titulacaoatual character(1) NOT NULL,
+    livredocente smallint,
+    posdoutorado smallint,
+    anotitulacao smallint NOT NULL,
+    idareaconhecimentoformacao character(8) NOT NULL,
+    siglaiestitulacaomaxima character varying(15),
+    nomeiestitulacaomaxima character varying(60) NOT NULL,
+    idpaisiestitulacaomaxima character(2) NOT NULL,
+    professortitular smallint,
+    numeroorientadosmestradoprof smallint,
+    coorientacaomestrado smallint,
+    coorientacaodoutorado smallint,
+    coorientacaomestradoprof smallint,
+    egresso boolean DEFAULT false
+);
+
+
+ALTER TABLE public.col_docentes OWNER TO postgres;
+
+--
+-- Name: col_docentes_atividade; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_docentes_atividade (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    sequencial smallint NOT NULL,
+    idlocalatividade smallint NOT NULL,
+    idtipoatividade smallint NOT NULL,
+    comentario character varying(60),
+    idpais character(2) NOT NULL,
+    iduf character(2)
+);
+
+
+ALTER TABLE public.col_docentes_atividade OWNER TO postgres;
+
+--
+-- Name: col_docentes_ies; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_docentes_ies (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    mesinicio smallint NOT NULL,
+    mesfim smallint,
+    cargahorariasemanal smallint NOT NULL,
+    dedicacaoexclusiva smallint,
+    idtiponaturezavinculo smallint NOT NULL,
+    siglaiesorigem character varying(15),
+    nomeiesorigem character varying(60),
+    idpaisiesorigem character(2),
+    tipodocente character(1),
+    anovinculo smallint
+);
+
+
+ALTER TABLE public.col_docentes_ies OWNER TO postgres;
+
+--
+-- Name: col_docentes_programa; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_docentes_programa (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    mesinicio smallint NOT NULL,
+    mesfim smallint NOT NULL,
+    percentualatuacao smallint,
+    comentario character varying(60),
+    ministroudisciplina boolean DEFAULT true,
+    afastado boolean DEFAULT false,
+    motivoafastamento smallint,
+    numerodisciplinas smallint,
+    cargahorariaanual smallint
+);
+
+
+ALTER TABLE public.col_docentes_programa OWNER TO postgres;
+
+--
+-- Name: col_docentes_treinamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_docentes_treinamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    mesinicio smallint NOT NULL,
+    mesfim smallint NOT NULL,
+    niveltreinamento character(1) NOT NULL,
+    idareaconhecimento character(8) NOT NULL,
+    siglaiestreinamento character varying(15),
+    nomeiestreinamento character varying(60),
+    idpaisiestreinamento character(2)
+);
+
+
+ALTER TABLE public.col_docentes_treinamento OWNER TO postgres;
+
+--
+-- Name: col_egressos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_egressos (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    aprovacaoconcurso text,
+    nomeacaocargo text,
+    premiodistincao text,
+    vinculoempregaticio character(2),
+    empregador character varying(50),
+    naturezaempregador character(2),
+    funcao character(2),
+    atividade character(2)
+);
+
+
+ALTER TABLE public.col_egressos OWNER TO postgres;
+
+--
+-- Name: col_exportacao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_exportacao (
+    codigotabela character(3) NOT NULL,
+    nometabela character varying(30) NOT NULL,
+    tipooperacao smallint NOT NULL,
+    colunaanobase character varying(30),
+    colunaprograma character varying(30)
+);
+
+
+ALTER TABLE public.col_exportacao OWNER TO postgres;
+
+--
+-- Name: col_ficha_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_ficha_header (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    tdglobalaplicacao character(2),
+    tdglobalconsultor character(2),
+    justificativatdglobal text,
+    conceito smallint,
+    justificativaconceito text,
+    historico text,
+    tdcoerenciaaplicacao character(2),
+    tdcoerenciaconsultor character(2),
+    tdcompletudeaplicacao character(2),
+    tdcompletudeconsultor character(2),
+    tdsituacaoaplicacao character(2),
+    tdsituacaoconsultor character(2),
+    tdaspectoaplicacao character(2),
+    tdaspectoconsultor character(2),
+    comentariosevolucao text,
+    comentarioqualidade text,
+    comentarioatividadegrad text,
+    comentarioatividadeext text,
+    comissaorecomendavisita boolean NOT NULL,
+    recomendacaovisita text,
+    recomendacaoapoio text,
+    recomendacaocomissao text,
+    consistente boolean NOT NULL,
+    criteriosalterados boolean NOT NULL
+);
+
+
+ALTER TABLE public.col_ficha_header OWNER TO postgres;
+
+--
+-- Name: col_ficha_item; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_ficha_item (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idquesito smallint NOT NULL,
+    iditem smallint NOT NULL,
+    avaliacao character(2)
+);
+
+
+ALTER TABLE public.col_ficha_item OWNER TO postgres;
+
+--
+-- Name: col_ficha_quesito; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_ficha_quesito (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idquesito smallint NOT NULL,
+    tdaplicacao character(2),
+    tdconsultor character(2),
+    coerencia character(2),
+    completude character(2),
+    situacao character(2),
+    aspecto character(2),
+    caracterizacaoevolucao character(2),
+    apreciacao text
+);
+
+
+ALTER TABLE public.col_ficha_quesito OWNER TO postgres;
+
+--
+-- Name: col_fluxo_discentes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_fluxo_discentes (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    idinfodiscente integer NOT NULL,
+    idinfodiscentedetalhe integer NOT NULL,
+    natureza character(1) NOT NULL,
+    quantidade integer DEFAULT 0
+);
+
+
+ALTER TABLE public.col_fluxo_discentes OWNER TO postgres;
+
+--
+-- Name: col_indicadores_nrd; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_indicadores_nrd (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    mes smallint NOT NULL,
+    vinculo character(3),
+    ch character(1),
+    percentualch character(1)
+);
+
+
+ALTER TABLE public.col_indicadores_nrd OWNER TO postgres;
+
+--
+-- Name: col_info_discentes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_info_discentes (
+    anobase smallint NOT NULL,
+    codigo integer NOT NULL,
+    detalhe integer NOT NULL,
+    descricao character varying(60) NOT NULL,
+    master smallint NOT NULL,
+    natureza character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_info_discentes OWNER TO postgres;
+
+--
+-- Name: col_informacoes_complementares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_informacoes_complementares (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    propostaprograma text,
+    integracaograduacao text,
+    laboratorio text,
+    recursosinformatica text,
+    biblioteca text,
+    atividadescomplementares text,
+    trabalhospreparacao text,
+    intercambios text,
+    autoavalicao text,
+    outrasinformacoes text,
+    ensinodistancia text,
+    criticassugestoescapes text,
+    criticassugestoescomite text,
+    estagiodocencia text,
+    outrasinformacoesinfra text,
+    minter integer,
+    melhorias text,
+    solidariedade text,
+    nucleacao text,
+    transparencia text
+);
+
+
+ALTER TABLE public.col_informacoes_complementares OWNER TO postgres;
+
+--
+-- Name: col_item_basico; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_item_basico (
+    anobase smallint NOT NULL,
+    idquesito smallint NOT NULL,
+    codigoitembasico smallint NOT NULL,
+    descricaoitembasico character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.col_item_basico OWNER TO postgres;
+
+--
+-- Name: col_linhas_pesquisa; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_linhas_pesquisa (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    codigo integer NOT NULL,
+    nome character(255) NOT NULL,
+    anoinicio smallint,
+    situacao character(1),
+    descricao character varying(255) NOT NULL,
+    idareaconcentracao integer
+);
+
+
+ALTER TABLE public.col_linhas_pesquisa OWNER TO postgres;
+
+--
+-- Name: col_local_atividade; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_local_atividade (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(30) NOT NULL,
+    grupo character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_local_atividade OWNER TO postgres;
+
+--
+-- Name: col_meses; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_meses (
+    mes smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_meses OWNER TO postgres;
+
+--
+-- Name: col_motivo_afastamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_motivo_afastamento (
+    anobase smallint NOT NULL,
+    idafastamento smallint NOT NULL,
+    descricaomotivo character varying(60)
+);
+
+
+ALTER TABLE public.col_motivo_afastamento OWNER TO postgres;
+
+--
+-- Name: col_outros; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_outros (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    titulacaoatual character(1),
+    anotitulacao smallint,
+    idareaconhecimentoformacao character(8),
+    siglaiestitulacaomaxima character varying(15),
+    nomeiestitulacaomaxima character varying(60),
+    idpaisiestitulacaomaxima character(2),
+    livredocente smallint NOT NULL,
+    posdoutorado smallint NOT NULL,
+    numeroorientandosmestrado smallint,
+    numeroorientandosdoutorado smallint,
+    numeroorientandosmestradoprof smallint,
+    iesdeorigem character(1),
+    idiesdeorigem character(8),
+    siglaiesdeorigem character(10),
+    nomeiesdeorigem character varying(60),
+    coautor integer,
+    membrobanca integer,
+    egresso boolean DEFAULT false,
+    outros boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.col_outros OWNER TO postgres;
+
+--
+-- Name: col_periodicos_area; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_periodicos_area (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idqualis integer NOT NULL,
+    issnpadrao character varying(255) NOT NULL,
+    titulopadrao character varying(255) NOT NULL,
+    nivel character(1),
+    circulacao character(1)
+);
+
+
+ALTER TABLE public.col_periodicos_area OWNER TO postgres;
+
+--
+-- Name: col_periodicos_qualis_atualiza; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_periodicos_qualis_atualiza (
+    padraotitulo character varying(255) NOT NULL,
+    padraoissn character varying(255) NOT NULL,
+    padraotrabalhado character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.col_periodicos_qualis_atualiza OWNER TO postgres;
+
+--
+-- Name: col_periodicos_qualis_geral; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_periodicos_qualis_geral (
+    issn character varying(255) NOT NULL,
+    titulo character varying(255) NOT NULL,
+    titulotrabalhado character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.col_periodicos_qualis_geral OWNER TO postgres;
+
+--
+-- Name: col_peso_item_aa; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_peso_item_aa (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idquesito smallint NOT NULL,
+    iditem smallint NOT NULL,
+    descricaoitem character varying(255),
+    peso numeric(10,2),
+    itemadhoc boolean NOT NULL
+);
+
+
+ALTER TABLE public.col_peso_item_aa OWNER TO postgres;
+
+--
+-- Name: col_peso_quesito_aa; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_peso_quesito_aa (
+    anobase smallint NOT NULL,
+    idareaavaliacao smallint NOT NULL,
+    idquesito smallint NOT NULL,
+    peso numeric(10,2)
+);
+
+
+ALTER TABLE public.col_peso_quesito_aa OWNER TO postgres;
+
+--
+-- Name: col_pesquisadores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_pesquisadores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    titulacaoatual character(1) NOT NULL,
+    anotitulacao smallint NOT NULL,
+    idareaconhecimentoformacao character(8) NOT NULL,
+    siglaiestitulacaomaxima character varying(15),
+    nomeiestitulacaomaxima character varying(60) NOT NULL,
+    idpaisiestitulacaomaxima character(2) NOT NULL,
+    posdoutorante smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_pesquisadores OWNER TO postgres;
+
+--
+-- Name: col_pessoal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_pessoal (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer NOT NULL,
+    documento character varying(22) NOT NULL,
+    categoria character(1) NOT NULL,
+    nome character varying(60) NOT NULL,
+    nomeabreviado character varying(40) NOT NULL,
+    sexo character(1),
+    origem character(1),
+    anonascimento smallint,
+    tipodocumento character(1) NOT NULL,
+    pais character(2) NOT NULL,
+    partenumdocumento character varying(20) NOT NULL,
+    email character varying(255)
+);
+
+
+ALTER TABLE public.col_pessoal OWNER TO postgres;
+
+--
+-- Name: col_pessoal_indicadores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_pessoal_indicadores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer NOT NULL,
+    idestrutura text NOT NULL,
+    valor text NOT NULL,
+    valorpercentual text NOT NULL,
+    tituloestrutura character(80) NOT NULL,
+    "TIMESTAMP" timestamp without time zone
+);
+
+
+ALTER TABLE public.col_pessoal_indicadores OWNER TO postgres;
+
+--
+-- Name: col_procedimento_selecao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_procedimento_selecao (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(80) NOT NULL,
+    nivel character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_procedimento_selecao OWNER TO postgres;
+
+--
+-- Name: col_producao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_producao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer NOT NULL,
+    areaproducao character(1) NOT NULL,
+    nomeproducao character varying(255) NOT NULL,
+    anoproducao smallint NOT NULL,
+    ididioma smallint,
+    idpais character(2),
+    vinculotese smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idlinhapesquisa integer,
+    idprojetopesquisa integer,
+    idareaconcentracao integer,
+    niveltese character(1),
+    teseconcluida smallint,
+    anoconclusaotese smallint,
+    teseproprioprograma smallint,
+    siglaiestese character varying(15),
+    nomeiestese character varying(60),
+    idpaistese character(2),
+    idorientadortese integer,
+    pertencelistaqualis smallint DEFAULT 0,
+    propriaiestese smallint,
+    idqualis integer,
+    revisado boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.col_producao OWNER TO postgres;
+
+--
+-- Name: col_producao_destaques; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_producao_destaques (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer NOT NULL,
+    posicao smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_producao_destaques OWNER TO postgres;
+
+--
+-- Name: col_producao_detalhamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_producao_detalhamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer NOT NULL,
+    idtipoproducaodetalhe smallint NOT NULL,
+    titulo character varying(60) NOT NULL,
+    conteudo character varying(255) NOT NULL,
+    areaproducao character(1) NOT NULL,
+    idtipoproducao smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_producao_detalhamento OWNER TO postgres;
+
+--
+-- Name: col_programas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_programas (
+    anobase smallint NOT NULL,
+    codigo character(13) NOT NULL,
+    idiespais character(8),
+    rdnpartecodigo character(11),
+    rdnnivel character(1),
+    rdndv character(1),
+    nome character varying(60) NOT NULL,
+    idareabasica character(8) NOT NULL,
+    regimeletivo character(1) NOT NULL,
+    logradouro character varying(60),
+    bairro character varying(25),
+    cidade character varying(25),
+    iduf character(2),
+    cep character(9),
+    caixapostal character(10),
+    telefone1 character varying(20),
+    telefone2 character varying(20),
+    ramal1 character(5),
+    ramal2 character(5),
+    fax character varying(20),
+    email character varying(255),
+    ultseqdisciplina integer NOT NULL,
+    ultseqareaconcentracao integer NOT NULL,
+    ultseqpessoal integer NOT NULL,
+    ultseqproducao integer NOT NULL,
+    ultseqteses integer NOT NULL,
+    ultseqlinhapesq integer NOT NULL,
+    ultseqprojpesq integer NOT NULL,
+    idiescoparticipante character(8),
+    integracaolattes smallint,
+    url character varying(255)
+);
+
+
+ALTER TABLE public.col_programas OWNER TO postgres;
+
+--
+-- Name: col_programas_indicadores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_programas_indicadores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idestrutura text NOT NULL,
+    valor text NOT NULL,
+    valorpercentual text NOT NULL,
+    tituloestrutura character(80) NOT NULL,
+    "TIMESTAMP" timestamp without time zone
+);
+
+
+ALTER TABLE public.col_programas_indicadores OWNER TO postgres;
+
+--
+-- Name: col_projetos_pesquisa; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_projetos_pesquisa (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idlinhapesquisa integer NOT NULL,
+    codigo integer NOT NULL,
+    nome character(255) NOT NULL,
+    situacao character(1),
+    descricao text NOT NULL,
+    idareaconcentracao integer,
+    numeroalunosgraduacao smallint,
+    numeroalunosmestrado smallint,
+    numeroalunosdoutorado smallint,
+    numeroalunosespecializacao smallint,
+    anoinicio smallint NOT NULL,
+    numeroalunosmestradoprof smallint,
+    natureza character(1)
+);
+
+
+ALTER TABLE public.col_projetos_pesquisa OWNER TO postgres;
+
+--
+-- Name: col_quesito_basico; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_quesito_basico (
+    anobase smallint NOT NULL,
+    codigoquesito smallint NOT NULL,
+    descricaoquesito character varying(100) NOT NULL,
+    grupodddw smallint NOT NULL,
+    ponderavel boolean NOT NULL,
+    maximoitensadhoc smallint NOT NULL,
+    pesominimoitem smallint NOT NULL,
+    pesomaximoitem smallint NOT NULL,
+    escalaitem smallint NOT NULL,
+    ordemquesito character(10) NOT NULL
+);
+
+
+ALTER TABLE public.col_quesito_basico OWNER TO postgres;
+
+--
+-- Name: col_r_area_prod_tipo_prod; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_area_prod_tipo_prod (
+    anobase smallint NOT NULL,
+    areaproducao character(1) NOT NULL,
+    idtipoproducao smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_area_prod_tipo_prod OWNER TO postgres;
+
+--
+-- Name: col_r_cursos_areas_afins; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_cursos_areas_afins (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    idareaconhecimento character(8) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_cursos_areas_afins OWNER TO postgres;
+
+--
+-- Name: col_r_cursos_areas_concentr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_cursos_areas_concentr (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    idareaconcentracao integer NOT NULL,
+    anoinicioatividade smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_cursos_areas_concentr OWNER TO postgres;
+
+--
+-- Name: col_r_cursos_inscricao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_cursos_inscricao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    idrequisitoinscricao smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_cursos_inscricao OWNER TO postgres;
+
+--
+-- Name: col_r_cursos_selecao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_cursos_selecao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    nivel character(1) NOT NULL,
+    idprocedimentoselecao smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_cursos_selecao OWNER TO postgres;
+
+--
+-- Name: col_r_detalhe_consolidacao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_detalhe_consolidacao (
+    anobase smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idtipoproducaodetalhe smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_detalhe_consolidacao OWNER TO postgres;
+
+--
+-- Name: col_r_disciplinas_areas_concen; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_disciplinas_areas_concen (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    iddisciplina integer NOT NULL,
+    idareaconcentracao integer NOT NULL
+);
+
+
+ALTER TABLE public.col_r_disciplinas_areas_concen OWNER TO postgres;
+
+--
+-- Name: col_r_disciplinas_turmas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_disciplinas_turmas (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    iddisciplina integer NOT NULL,
+    sequencial integer NOT NULL,
+    periodoletivo character(1) NOT NULL,
+    subtitulo character varying(255),
+    cargahoraria smallint NOT NULL,
+    numerocreditos real NOT NULL,
+    rndregimeletivo character(1)
+);
+
+
+ALTER TABLE public.col_r_disciplinas_turmas OWNER TO postgres;
+
+--
+-- Name: col_r_disciplinas_turmas_docen; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_disciplinas_turmas_docen (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    iddisciplina integer NOT NULL,
+    idturma integer NOT NULL,
+    idpessoal integer NOT NULL,
+    fracaocargahoraria real NOT NULL
+);
+
+
+ALTER TABLE public.col_r_disciplinas_turmas_docen OWNER TO postgres;
+
+--
+-- Name: col_r_info_discentes_nivel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_info_discentes_nivel (
+    anobase smallint NOT NULL,
+    nivel character(1) NOT NULL,
+    idinfodiscente integer NOT NULL,
+    idinfodiscentedetalhe integer NOT NULL,
+    natureza character(1) NOT NULL,
+    nivelrdn character(1),
+    idinfodiscenterdn integer,
+    idinfodiscentedetalherdn integer,
+    sqlcount text
+);
+
+
+ALTER TABLE public.col_r_info_discentes_nivel OWNER TO postgres;
+
+--
+-- Name: col_r_orientacoes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_orientacoes (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    iddiscente integer NOT NULL,
+    idorientador integer NOT NULL,
+    tipoorientacao character(1)
+);
+
+
+ALTER TABLE public.col_r_orientacoes OWNER TO postgres;
+
+--
+-- Name: col_r_producao_area_conhec; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_producao_area_conhec (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer NOT NULL,
+    idareaconhecimento character(8) NOT NULL,
+    areaproducao character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_producao_area_conhec OWNER TO postgres;
+
+--
+-- Name: col_r_producao_autor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_producao_autor (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer NOT NULL,
+    idautor integer NOT NULL,
+    ordemautor smallint NOT NULL,
+    areaproducao character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_producao_autor OWNER TO postgres;
+
+--
+-- Name: col_r_programa_eventos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_programa_eventos (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idqualis integer NOT NULL,
+    referencia smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_programa_eventos OWNER TO postgres;
+
+--
+-- Name: col_r_programa_periodicos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_programa_periodicos (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idqualis integer NOT NULL,
+    referencia smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_programa_periodicos OWNER TO postgres;
+
+--
+-- Name: col_r_programas_areas_concentr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_programas_areas_concentr (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    codigo integer NOT NULL,
+    descricao character varying(60) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_programas_areas_concentr OWNER TO postgres;
+
+--
+-- Name: col_r_projetos_agencias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_projetos_agencias (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idlinhapesquisa integer NOT NULL,
+    idprojetopesquisa integer NOT NULL,
+    idagencia character(3) NOT NULL,
+    natureza character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_projetos_agencias OWNER TO postgres;
+
+--
+-- Name: col_r_projetos_pesquisadores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_projetos_pesquisadores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idlinhapesquisa integer NOT NULL,
+    idprojetopesquisa integer NOT NULL,
+    idpessoal integer NOT NULL,
+    responsavel smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_projetos_pesquisadores OWNER TO postgres;
+
+--
+-- Name: col_r_teses_agencias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_teses_agencias (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idtese integer NOT NULL,
+    idagencia character(3) NOT NULL,
+    natureza character(1) NOT NULL,
+    numeromeses smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_r_teses_agencias OWNER TO postgres;
+
+--
+-- Name: col_r_teses_areas_conhecimento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_teses_areas_conhecimento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idtese integer NOT NULL,
+    idareaconhecimento character(8) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_teses_areas_conhecimento OWNER TO postgres;
+
+--
+-- Name: col_r_teses_banca_examinadora; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_teses_banca_examinadora (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idtese integer NOT NULL,
+    idpessoalexaminador integer NOT NULL
+);
+
+
+ALTER TABLE public.col_r_teses_banca_examinadora OWNER TO postgres;
+
+--
+-- Name: col_r_teses_orientadores; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_r_teses_orientadores (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idtese integer NOT NULL,
+    idpessoalorientador integer NOT NULL,
+    tipo character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_r_teses_orientadores OWNER TO postgres;
+
+--
+-- Name: col_requisito_inscricao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_requisito_inscricao (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(80) NOT NULL,
+    nivel character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_requisito_inscricao OWNER TO postgres;
+
+--
+-- Name: col_teses; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_teses (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer NOT NULL,
+    idpessoal integer NOT NULL,
+    matriculaautor date NOT NULL,
+    defesatese date NOT NULL,
+    nivel character(1) NOT NULL,
+    titulotese text NOT NULL,
+    idlinhapesquisa integer,
+    idprojetopesquisa integer,
+    idareaconcentracao integer,
+    bibliotecadepositaria character varying(60) NOT NULL,
+    volume smallint NOT NULL,
+    numeropaginas smallint NOT NULL,
+    palavraschave character varying(60) NOT NULL,
+    ididioma smallint NOT NULL,
+    resumotese text NOT NULL,
+    tipovinculoatual character(2),
+    tipoatividadepretendida character(2),
+    mesmaareatitulacao smallint NOT NULL,
+    logradouro character varying(60),
+    bairro character varying(25),
+    cidade character varying(25),
+    idpais character(2),
+    iduf character(2),
+    cep character(9),
+    caixapostal character(10),
+    telefone1 character varying(30),
+    telefone2 character varying(30),
+    ramal1 character(5),
+    ramal2 character(5),
+    fax character varying(30),
+    email character varying(255),
+    vinculoempregaticio character(2)
+);
+
+
+ALTER TABLE public.col_teses OWNER TO postgres;
+
+--
+-- Name: col_tipo_atividade; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_tipo_atividade (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(30) NOT NULL,
+    grupo character(1) NOT NULL
+);
+
+
+ALTER TABLE public.col_tipo_atividade OWNER TO postgres;
+
+--
+-- Name: col_tipo_natureza_vinculo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_tipo_natureza_vinculo (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(30) NOT NULL,
+    possueorigem smallint NOT NULL,
+    obrigatorio smallint NOT NULL
+);
+
+
+ALTER TABLE public.col_tipo_natureza_vinculo OWNER TO postgres;
+
+--
+-- Name: col_tipo_producao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_tipo_producao (
+    anobase smallint NOT NULL,
+    codigo smallint NOT NULL,
+    descricao character varying(60) NOT NULL
+);
+
+
+ALTER TABLE public.col_tipo_producao OWNER TO postgres;
+
+--
+-- Name: col_tipo_producao_detalhe; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_tipo_producao_detalhe (
+    anobase smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    codigo smallint NOT NULL,
+    titulocoluna character varying(60) NOT NULL,
+    ordem smallint NOT NULL,
+    tipoobjeto character(1) NOT NULL,
+    tipoconteudo character(1) NOT NULL,
+    padrao character varying(60),
+    validade character varying(255),
+    msgerro character varying(60),
+    textomicrohelp character varying(255) NOT NULL,
+    tamanho smallint NOT NULL,
+    obrigatorio character(1) NOT NULL,
+    formatdisplay character varying(255),
+    displayonly character(1) NOT NULL,
+    tipocase character(1) NOT NULL,
+    valores character varying(255),
+    mask character varying(255),
+    dddwname character varying(40),
+    dddwdatacolumn character varying(60),
+    dddwdisplaycolumn character varying(60)
+);
+
+
+ALTER TABLE public.col_tipo_producao_detalhe OWNER TO postgres;
+
+--
+-- Name: col_tipo_status_discente; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE col_tipo_status_discente (
+    anobase smallint NOT NULL,
+    idstatus character(1) NOT NULL,
+    descricao character varying(50)
+);
+
+
+ALTER TABLE public.col_tipo_status_discente OWNER TO postgres;
+
+--
+-- Name: g_aplicacoes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_aplicacoes (
+    codigoaplicacao character(10) NOT NULL,
+    descricao character(30) NOT NULL,
+    atributosnivelacesso character(255),
+    atributospodeatualizar character(255),
+    atributospodecriar character(255),
+    atributospodeexcluir character(255)
+);
+
+
+ALTER TABLE public.g_aplicacoes OWNER TO postgres;
+
+--
+-- Name: g_area_subarea; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_area_subarea (
+    codigo character(8) NOT NULL,
+    descricao character varying(60) NOT NULL,
+    idgrandearea character(8),
+    idarea character(8),
+    idsubarea character(8),
+    idespecialidade character(8)
+);
+
+
+ALTER TABLE public.g_area_subarea OWNER TO postgres;
+
+--
+-- Name: g_estrutura; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_estrutura (
+    estrutura text NOT NULL,
+    tituloestrutura character(80),
+    folder smallint,
+    nivel smallint,
+    tiporegistro smallint,
+    tipovalor character(1),
+    tipocalculo character(1),
+    calculo text,
+    formulapercentual text,
+    drill text,
+    seqvisivel integer,
+    seqcalculo integer,
+    parametros text
+);
+
+
+ALTER TABLE public.g_estrutura OWNER TO postgres;
+
+--
+-- Name: g_idiomas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_idiomas (
+    codigo smallint NOT NULL,
+    descricao character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.g_idiomas OWNER TO postgres;
+
+--
+-- Name: g_ies_pais; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_ies_pais (
+    codigo character(8) NOT NULL,
+    nome character varying(60) NOT NULL,
+    sigla character(10) NOT NULL
+);
+
+
+ALTER TABLE public.g_ies_pais OWNER TO postgres;
+
+--
+-- Name: g_menu; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_menu (
+    indice smallint NOT NULL,
+    idmenu smallint NOT NULL,
+    idpai smallint,
+    nommenu character varying(60) NOT NULL,
+    dscmenu character varying(255),
+    ordem smallint,
+    idaplicacao character varying(4)
+);
+
+
+ALTER TABLE public.g_menu OWNER TO postgres;
+
+--
+-- Name: g_msg_erro; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_msg_erro (
+    idsqlcode integer NOT NULL,
+    idsqlstate character(10) NOT NULL,
+    mensagem character varying(255) NOT NULL,
+    idconstante character(50)
+);
+
+
+ALTER TABLE public.g_msg_erro OWNER TO postgres;
+
+--
+-- Name: g_paises; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_paises (
+    codigo character(2) NOT NULL,
+    descricao character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.g_paises OWNER TO postgres;
+
+--
+-- Name: g_qualis_eventos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_qualis_eventos (
+    idqualis integer NOT NULL,
+    isbn character varying(255) NOT NULL,
+    nomeevento character varying(255) NOT NULL,
+    usuarioalterou character varying(30),
+    dataauterou timestamp without time zone
+);
+
+
+ALTER TABLE public.g_qualis_eventos OWNER TO postgres;
+
+--
+-- Name: g_qualis_periodicos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_qualis_periodicos (
+    idqualis integer NOT NULL,
+    issn character varying(255) NOT NULL,
+    titulo character varying(255) NOT NULL,
+    usuarioalterou character(30),
+    dataalterou timestamp without time zone
+);
+
+
+ALTER TABLE public.g_qualis_periodicos OWNER TO postgres;
+
+--
+-- Name: g_r_aplicacoes_usuarios; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_r_aplicacoes_usuarios (
+    idusuario character(30) NOT NULL,
+    idaplicacao character(10) NOT NULL,
+    nivelacesso character(30),
+    podeatualizar smallint NOT NULL,
+    podecriar smallint NOT NULL,
+    podeexcluir smallint NOT NULL,
+    consistente smallint NOT NULL
+);
+
+
+ALTER TABLE public.g_r_aplicacoes_usuarios OWNER TO postgres;
+
+--
+-- Name: g_ufs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_ufs (
+    sigla character(2) NOT NULL,
+    descricao character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.g_ufs OWNER TO postgres;
+
+--
+-- Name: g_usuarios; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE g_usuarios (
+    login character(30) NOT NULL,
+    nome character(40),
+    datacriacao date
+);
+
+
+ALTER TABLE public.g_usuarios OWNER TO postgres;
+
+--
+-- Name: icl_docentes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_docentes (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    numeroorientandosprojetofinal smallint,
+    numeroorientandosiniccientif smallint,
+    numeroorientandostutoria smallint,
+    numeroorientandosoutros smallint,
+    cargahorariaanualgraduacao smallint,
+    numerodisciplinas smallint,
+    numeroorientandosmestrado smallint,
+    numeroorientandosdoutorado smallint,
+    titulacaoatual character(1) NOT NULL,
+    livredocente smallint,
+    posdoutorado smallint,
+    anotitulacao smallint NOT NULL,
+    idareaconhecimentoformacao character(8) NOT NULL,
+    siglaiestitulacaomaxima character varying(15),
+    nomeiestitulacaomaxima character varying(60) NOT NULL,
+    idpaisiestitulacaomaxima character(2) NOT NULL,
+    professortitular smallint,
+    numeroorientadosmestradoprof smallint,
+    coorientacaomestrado smallint,
+    coorientacaodoutorado smallint,
+    coorientacaomestradoprof smallint,
+    idcnpq character varying(30) NOT NULL
+);
+
+
+ALTER TABLE public.icl_docentes OWNER TO postgres;
+
+--
+-- Name: icl_docentes_atividade; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_docentes_atividade (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    sequencial smallint NOT NULL,
+    idlocalatividade smallint NOT NULL,
+    idtipoatividade smallint NOT NULL,
+    comentario character varying(60),
+    idpais character(2) NOT NULL,
+    iduf character(2),
+    idcnpq character varying(30) NOT NULL
+);
+
+
+ALTER TABLE public.icl_docentes_atividade OWNER TO postgres;
+
+--
+-- Name: icl_docentes_treinamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_docentes_treinamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    mesinicio smallint NOT NULL,
+    mesfim smallint NOT NULL,
+    niveltreinamento character(1) NOT NULL,
+    idareaconhecimento character(8) NOT NULL,
+    siglaiestreinamento character varying(15),
+    nomeiestreinamento character varying(60),
+    idpaisiestreinamento character(2),
+    idcnpq character varying(30) NOT NULL
+);
+
+
+ALTER TABLE public.icl_docentes_treinamento OWNER TO postgres;
+
+--
+-- Name: icl_importacao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_importacao (
+    codigotabela character(3) NOT NULL,
+    nometabela character varying(30) NOT NULL,
+    tipooperacao smallint NOT NULL,
+    colunaanobase character varying(30),
+    colunaprograma character varying(30),
+    versaoxml character(30) NOT NULL,
+    selectpadrao text NOT NULL,
+    updatepadrao text NOT NULL
+);
+
+
+ALTER TABLE public.icl_importacao OWNER TO postgres;
+
+--
+-- Name: icl_log_docentes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_docentes (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    numeroorientandosprojetofinal smallint,
+    numeroorientandosiniccientif smallint,
+    numeroorientandostutoria smallint,
+    numeroorientandosoutros smallint,
+    cargahorariaanualgraduacao smallint,
+    numerodisciplinas smallint,
+    numeroorientandosmestrado smallint,
+    numeroorientandosdoutorado smallint,
+    titulacaoatual character(1) NOT NULL,
+    livredocente smallint,
+    posdoutorado smallint,
+    anotitulacao smallint NOT NULL,
+    idareaconhecimentoformacao character(8) NOT NULL,
+    siglaiestitulacaomaxima character varying(15),
+    nomeiestitulacaomaxima character varying(60) NOT NULL,
+    idpaisiestitulacaomaxima character(2) NOT NULL,
+    professortitular smallint,
+    numeroorientadosmestradoprof smallint,
+    coorientacaomestrado smallint,
+    coorientacaodoutorado smallint,
+    coorientacaomestradoprof smallint,
+    idcnpq character varying(30) NOT NULL,
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone,
+    operacao character(1),
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_docentes OWNER TO postgres;
+
+--
+-- Name: icl_log_docentes_atividade; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_docentes_atividade (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    sequencial smallint NOT NULL,
+    idlocalatividade smallint NOT NULL,
+    idtipoatividade smallint NOT NULL,
+    comentario character varying(60),
+    idpais character(2) NOT NULL,
+    iduf character(2),
+    idcnpq character varying(30) NOT NULL,
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone NOT NULL,
+    operacao character(1),
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_docentes_atividade OWNER TO postgres;
+
+--
+-- Name: icl_log_docentes_treinamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_docentes_treinamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    mesinicio smallint NOT NULL,
+    mesfim smallint NOT NULL,
+    niveltreinamento character(1) NOT NULL,
+    idareaconhecimento character(8) NOT NULL,
+    siglaiestreinamento character varying(15),
+    nomeiestreinamento character varying(60),
+    idpaisiestreinamento character(2),
+    idcnpq character varying(30) NOT NULL,
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone,
+    operacao character(1),
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_docentes_treinamento OWNER TO postgres;
+
+--
+-- Name: icl_log_pessoal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_pessoal (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    documento character varying(22),
+    categoria character(1),
+    nome character varying(60) NOT NULL,
+    nomeabreviado character varying(40) NOT NULL,
+    sexo character(1),
+    origem character(1),
+    anonascimento smallint,
+    tipodocumento character(1),
+    pais character(2),
+    partenumdocumento character varying(20),
+    email character varying(255),
+    idcnpq character varying(30) NOT NULL,
+    idtipopendencia character(6),
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone NOT NULL,
+    operacao character(1),
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_pessoal OWNER TO postgres;
+
+--
+-- Name: icl_log_producao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_producao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer,
+    areaproducao character(1) NOT NULL,
+    nomeproducao character varying(255) NOT NULL,
+    anoproducao smallint NOT NULL,
+    ididioma smallint,
+    idpais character(2),
+    vinculotese smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idlinhapesquisa integer,
+    idprojetopesquisa integer,
+    idareaconcentracao integer,
+    niveltese character(1),
+    teseconcluida smallint,
+    anoconclusaotese smallint,
+    teseproprioprograma smallint,
+    siglaiestese character varying(15),
+    nomeiestese character varying(60),
+    idpaistese character(2),
+    idorientadortese integer,
+    pertencelistaqualis smallint DEFAULT 0,
+    propriaiestese smallint,
+    idsequenciallat character varying(30) NOT NULL,
+    idtipopendencia character(6),
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone NOT NULL,
+    operacao character(1) NOT NULL,
+    usuario character(15) NOT NULL,
+    idqualis integer
+);
+
+
+ALTER TABLE public.icl_log_producao OWNER TO postgres;
+
+--
+-- Name: icl_log_producao_detalhamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_producao_detalhamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer,
+    idtipoproducaodetalhe smallint NOT NULL,
+    titulo character varying(60) NOT NULL,
+    conteudo character varying(255) NOT NULL,
+    areaproducao character(1) NOT NULL,
+    idtipoproducao smallint,
+    idsequenciallat character varying(30) NOT NULL,
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone NOT NULL,
+    operacao character(1) NOT NULL,
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_producao_detalhamento OWNER TO postgres;
+
+--
+-- Name: icl_log_r_producao_autor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_r_producao_autor (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer,
+    idautor integer,
+    ordemautor smallint NOT NULL,
+    areaproducao character(1),
+    idsequenciallat character varying(30) NOT NULL,
+    idcnpq character varying(30) NOT NULL,
+    idlog integer NOT NULL,
+    dataoperacao timestamp without time zone NOT NULL,
+    operacao character(1) NOT NULL,
+    usuario character(15) NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_r_producao_autor OWNER TO postgres;
+
+--
+-- Name: icl_log_sequencial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_log_sequencial (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idlog integer NOT NULL
+);
+
+
+ALTER TABLE public.icl_log_sequencial OWNER TO postgres;
+
+--
+-- Name: icl_pessoal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_pessoal (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idpessoal integer,
+    documento character varying(22),
+    categoria character(1),
+    nome character varying(60) NOT NULL,
+    nomeabreviado character varying(40) NOT NULL,
+    sexo character(1),
+    origem character(1),
+    anonascimento smallint,
+    tipodocumento character(1),
+    pais character(2),
+    partenumdocumento character varying(20),
+    email character varying(255),
+    idcnpq character varying(30) NOT NULL,
+    idtipopendencia character(6)
+);
+
+
+ALTER TABLE public.icl_pessoal OWNER TO postgres;
+
+--
+-- Name: icl_producao; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_producao (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    sequencial integer,
+    areaproducao character(1) NOT NULL,
+    nomeproducao character varying(255) NOT NULL,
+    anoproducao smallint NOT NULL,
+    ididioma smallint,
+    idpais character(2),
+    vinculotese smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idlinhapesquisa integer,
+    idprojetopesquisa integer,
+    idareaconcentracao integer,
+    niveltese character(1),
+    teseconcluida smallint,
+    anoconclusaotese smallint,
+    teseproprioprograma smallint,
+    siglaiestese character varying(15),
+    nomeiestese character varying(60),
+    idpaistese character(2),
+    idorientadortese integer,
+    pertencelistaqualis smallint DEFAULT 0,
+    propriaiestese smallint,
+    idsequenciallat character varying(30) NOT NULL,
+    idtipopendencia character(6),
+    idqualis integer,
+    revisado boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE public.icl_producao OWNER TO postgres;
+
+--
+-- Name: icl_producao_detalhamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_producao_detalhamento (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer,
+    idtipoproducaodetalhe smallint NOT NULL,
+    titulo character varying(60) NOT NULL,
+    conteudo character varying(255) NOT NULL,
+    areaproducao character(1) NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idsequenciallat character varying(30) NOT NULL
+);
+
+
+ALTER TABLE public.icl_producao_detalhamento OWNER TO postgres;
+
+--
+-- Name: icl_r_ajuste_detalhamento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_r_ajuste_detalhamento (
+    anobase smallint NOT NULL,
+    idtipoproducao smallint NOT NULL,
+    idtipoproducaodetalhe smallint NOT NULL,
+    valordiscretoerrado text NOT NULL,
+    valordiscretocorreto text NOT NULL
+);
+
+
+ALTER TABLE public.icl_r_ajuste_detalhamento OWNER TO postgres;
+
+--
+-- Name: icl_r_producao_autor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_r_producao_autor (
+    anobase smallint NOT NULL,
+    idprograma character(13) NOT NULL,
+    idproducao integer,
+    idautor integer,
+    ordemautor smallint NOT NULL,
+    areaproducao character(1),
+    idsequenciallat character varying(30) NOT NULL,
+    idcnpq character varying(30) NOT NULL
+);
+
+
+ALTER TABLE public.icl_r_producao_autor OWNER TO postgres;
+
+--
+-- Name: icl_tipo_pendencia; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE icl_tipo_pendencia (
+    idtipopendencia character(6) NOT NULL,
+    tipoinfo character(1),
+    descricaopendencia character(30) NOT NULL,
+    verificacao text NOT NULL
+);
+
+
+ALTER TABLE public.icl_tipo_pendencia OWNER TO postgres;
+
+--
+-- Name: col_agencias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_agencias
+    ADD CONSTRAINT col_agencias_pkey PRIMARY KEY (anobase, idprograma, codigo);
+
+
+--
+-- Name: col_areas_avaliacao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_areas_avaliacao
+    ADD CONSTRAINT col_areas_avaliacao_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_avaliacao_header_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_avaliacao_header
+    ADD CONSTRAINT col_avaliacao_header_pkey PRIMARY KEY (anobase);
+
+
+--
+-- Name: col_conceitos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_conceitos
+    ADD CONSTRAINT col_conceitos_pkey PRIMARY KEY (grupo, mnemonico);
+
+
+--
+-- Name: col_cursos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_cursos
+    ADD CONSTRAINT col_cursos_pkey PRIMARY KEY (anobase, idprograma, nivel);
+
+
+--
+-- Name: col_discentes_autores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_discentes_autores
+    ADD CONSTRAINT col_discentes_autores_pkey PRIMARY KEY (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_disciplinas_extensao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_disciplinas_extensao
+    ADD CONSTRAINT col_disciplinas_extensao_pkey PRIMARY KEY (anobase, idprograma, iddisciplina);
+
+
+--
+-- Name: col_disciplinas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_disciplinas
+    ADD CONSTRAINT col_disciplinas_pkey PRIMARY KEY (anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_docentes_atividade_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_docentes_atividade
+    ADD CONSTRAINT col_docentes_atividade_pkey PRIMARY KEY (anobase, idprograma, idpessoal, sequencial);
+
+
+--
+-- Name: col_docentes_ies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_docentes_ies
+    ADD CONSTRAINT col_docentes_ies_pkey PRIMARY KEY (anobase, idprograma, idpessoal, mesinicio);
+
+
+--
+-- Name: col_docentes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_docentes
+    ADD CONSTRAINT col_docentes_pkey PRIMARY KEY (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_docentes_programa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_docentes_programa
+    ADD CONSTRAINT col_docentes_programa_pkey PRIMARY KEY (anobase, idprograma, idpessoal, mesinicio, mesfim);
+
+
+--
+-- Name: col_docentes_treinamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_docentes_treinamento
+    ADD CONSTRAINT col_docentes_treinamento_pkey PRIMARY KEY (anobase, idprograma, idpessoal, mesinicio, mesfim);
+
+
+--
+-- Name: col_egressos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_egressos
+    ADD CONSTRAINT col_egressos_pkey PRIMARY KEY (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_exportacao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_exportacao
+    ADD CONSTRAINT col_exportacao_pkey PRIMARY KEY (codigotabela);
+
+
+--
+-- Name: col_ficha_header_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_ficha_header
+    ADD CONSTRAINT col_ficha_header_pkey PRIMARY KEY (anobase, idareaavaliacao, idprograma);
+
+
+--
+-- Name: col_ficha_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_ficha_item
+    ADD CONSTRAINT col_ficha_item_pkey PRIMARY KEY (anobase, idareaavaliacao, idprograma, idquesito, iditem);
+
+
+--
+-- Name: col_ficha_quesito_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_ficha_quesito
+    ADD CONSTRAINT col_ficha_quesito_pkey PRIMARY KEY (anobase, idareaavaliacao, idprograma, idquesito);
+
+
+--
+-- Name: col_fluxo_discentes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_fluxo_discentes
+    ADD CONSTRAINT col_fluxo_discentes_pkey PRIMARY KEY (anobase, idprograma, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: col_indicadores_nrd_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_indicadores_nrd
+    ADD CONSTRAINT col_indicadores_nrd_pkey PRIMARY KEY (anobase, idprograma, idpessoal, mes);
+
+
+--
+-- Name: col_info_discentes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_info_discentes
+    ADD CONSTRAINT col_info_discentes_pkey PRIMARY KEY (anobase, codigo, detalhe);
+
+
+--
+-- Name: col_informacoes_complementares_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_informacoes_complementares
+    ADD CONSTRAINT col_informacoes_complementares_pkey PRIMARY KEY (anobase, idprograma);
+
+
+--
+-- Name: col_item_basico_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_item_basico
+    ADD CONSTRAINT col_item_basico_pkey PRIMARY KEY (anobase, idquesito, codigoitembasico);
+
+
+--
+-- Name: col_linhas_pesquisa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_linhas_pesquisa
+    ADD CONSTRAINT col_linhas_pesquisa_pkey PRIMARY KEY (anobase, idprograma, codigo);
+
+
+--
+-- Name: col_local_atividade_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_local_atividade
+    ADD CONSTRAINT col_local_atividade_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_meses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_meses
+    ADD CONSTRAINT col_meses_pkey PRIMARY KEY (mes);
+
+
+--
+-- Name: col_motivo_afastamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_motivo_afastamento
+    ADD CONSTRAINT col_motivo_afastamento_pkey PRIMARY KEY (anobase, idafastamento);
+
+
+--
+-- Name: col_outros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_outros
+    ADD CONSTRAINT col_outros_pkey PRIMARY KEY (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_periodicos_area_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_periodicos_area
+    ADD CONSTRAINT col_periodicos_area_pkey PRIMARY KEY (anobase, idareaavaliacao, idqualis);
+
+
+--
+-- Name: col_periodicos_qualis_atualiza_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_periodicos_qualis_atualiza
+    ADD CONSTRAINT col_periodicos_qualis_atualiza_pkey PRIMARY KEY (padraotitulo, padraoissn);
+
+
+--
+-- Name: col_periodicos_qualis_geral_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_periodicos_qualis_geral
+    ADD CONSTRAINT col_periodicos_qualis_geral_pkey PRIMARY KEY (issn, titulo);
+
+
+--
+-- Name: col_peso_item_aa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_peso_item_aa
+    ADD CONSTRAINT col_peso_item_aa_pkey PRIMARY KEY (anobase, idareaavaliacao, idquesito, iditem);
+
+
+--
+-- Name: col_peso_quesito_aa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_peso_quesito_aa
+    ADD CONSTRAINT col_peso_quesito_aa_pkey PRIMARY KEY (anobase, idareaavaliacao, idquesito);
+
+
+--
+-- Name: col_pesquisadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_pesquisadores
+    ADD CONSTRAINT col_pesquisadores_pkey PRIMARY KEY (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_pessoal_indicadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_pessoal_indicadores
+    ADD CONSTRAINT col_pessoal_indicadores_pkey PRIMARY KEY (anobase, idprograma, idpessoal, idestrutura);
+
+
+--
+-- Name: col_pessoal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_pessoal
+    ADD CONSTRAINT col_pessoal_pkey PRIMARY KEY (anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_procedimento_selecao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_procedimento_selecao
+    ADD CONSTRAINT col_procedimento_selecao_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_producao_destaques_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_producao_destaques
+    ADD CONSTRAINT col_producao_destaques_pkey PRIMARY KEY (anobase, idprograma, idproducao);
+
+
+--
+-- Name: col_producao_detalhamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_producao_detalhamento
+    ADD CONSTRAINT col_producao_detalhamento_pkey PRIMARY KEY (anobase, idprograma, idproducao, idtipoproducaodetalhe);
+
+
+--
+-- Name: col_producao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_producao
+    ADD CONSTRAINT col_producao_pkey PRIMARY KEY (anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_programas_indicadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_programas_indicadores
+    ADD CONSTRAINT col_programas_indicadores_pkey PRIMARY KEY (anobase, idprograma, idestrutura);
+
+
+--
+-- Name: col_programas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_programas
+    ADD CONSTRAINT col_programas_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_projetos_pesquisa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_projetos_pesquisa
+    ADD CONSTRAINT col_projetos_pesquisa_pkey PRIMARY KEY (anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: col_r_area_prod_tipo_prod_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_area_prod_tipo_prod
+    ADD CONSTRAINT col_r_area_prod_tipo_prod_pkey PRIMARY KEY (anobase, areaproducao, idtipoproducao);
+
+
+--
+-- Name: col_r_cursos_areas_afins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_afins
+    ADD CONSTRAINT col_r_cursos_areas_afins_pkey PRIMARY KEY (anobase, idprograma, nivel, idareaconhecimento);
+
+
+--
+-- Name: col_r_cursos_areas_concentr_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_concentr
+    ADD CONSTRAINT col_r_cursos_areas_concentr_pkey PRIMARY KEY (anobase, idprograma, nivel, idareaconcentracao);
+
+
+--
+-- Name: col_r_cursos_inscricao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_cursos_inscricao
+    ADD CONSTRAINT col_r_cursos_inscricao_pkey PRIMARY KEY (anobase, idprograma, nivel, idrequisitoinscricao);
+
+
+--
+-- Name: col_r_cursos_selecao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_cursos_selecao
+    ADD CONSTRAINT col_r_cursos_selecao_pkey PRIMARY KEY (anobase, idprograma, nivel, idprocedimentoselecao);
+
+
+--
+-- Name: col_r_disciplinas_areas_concen_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_disciplinas_areas_concen
+    ADD CONSTRAINT col_r_disciplinas_areas_concen_pkey PRIMARY KEY (anobase, idprograma, iddisciplina, idareaconcentracao);
+
+
+--
+-- Name: col_r_disciplinas_turmas_docen_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_disciplinas_turmas_docen
+    ADD CONSTRAINT col_r_disciplinas_turmas_docen_pkey PRIMARY KEY (anobase, idprograma, iddisciplina, idturma, idpessoal);
+
+
+--
+-- Name: col_r_disciplinas_turmas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_disciplinas_turmas
+    ADD CONSTRAINT col_r_disciplinas_turmas_pkey PRIMARY KEY (anobase, idprograma, iddisciplina, sequencial);
+
+
+--
+-- Name: col_r_info_discentes_nivel_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_info_discentes_nivel
+    ADD CONSTRAINT col_r_info_discentes_nivel_pkey PRIMARY KEY (anobase, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: col_r_orientacoes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_orientacoes
+    ADD CONSTRAINT col_r_orientacoes_pkey PRIMARY KEY (anobase, idprograma, iddiscente, idorientador);
+
+
+--
+-- Name: col_r_producao_area_conhec_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_producao_area_conhec
+    ADD CONSTRAINT col_r_producao_area_conhec_pkey PRIMARY KEY (anobase, idprograma, idproducao, idareaconhecimento);
+
+
+--
+-- Name: col_r_producao_autor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_producao_autor
+    ADD CONSTRAINT col_r_producao_autor_pkey PRIMARY KEY (anobase, idprograma, idproducao, idautor);
+
+
+--
+-- Name: col_r_programa_eventos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_programa_eventos
+    ADD CONSTRAINT col_r_programa_eventos_pkey PRIMARY KEY (anobase, idprograma, idqualis);
+
+
+--
+-- Name: col_r_programa_periodicos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_programa_periodicos
+    ADD CONSTRAINT col_r_programa_periodicos_pkey PRIMARY KEY (anobase, idprograma, idqualis);
+
+
+--
+-- Name: col_r_programas_areas_concentr_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_programas_areas_concentr
+    ADD CONSTRAINT col_r_programas_areas_concentr_pkey PRIMARY KEY (anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_projetos_agencias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_projetos_agencias
+    ADD CONSTRAINT col_r_projetos_agencias_pkey PRIMARY KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa, idagencia, natureza);
+
+
+--
+-- Name: col_r_projetos_pesquisadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_projetos_pesquisadores
+    ADD CONSTRAINT col_r_projetos_pesquisadores_pkey PRIMARY KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa, idpessoal);
+
+
+--
+-- Name: col_r_teses_agencias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_teses_agencias
+    ADD CONSTRAINT col_r_teses_agencias_pkey PRIMARY KEY (anobase, idprograma, idtese, idagencia, natureza);
+
+
+--
+-- Name: col_r_teses_areas_conhecimento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_teses_areas_conhecimento
+    ADD CONSTRAINT col_r_teses_areas_conhecimento_pkey PRIMARY KEY (anobase, idprograma, idtese, idareaconhecimento);
+
+
+--
+-- Name: col_r_teses_banca_examinadora_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_teses_banca_examinadora
+    ADD CONSTRAINT col_r_teses_banca_examinadora_pkey PRIMARY KEY (anobase, idprograma, idtese, idpessoalexaminador);
+
+
+--
+-- Name: col_r_teses_orientadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_r_teses_orientadores
+    ADD CONSTRAINT col_r_teses_orientadores_pkey PRIMARY KEY (anobase, idprograma, idtese, idpessoalorientador);
+
+
+--
+-- Name: col_requisito_inscricao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_requisito_inscricao
+    ADD CONSTRAINT col_requisito_inscricao_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_teses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_pkey PRIMARY KEY (anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_tipo_atividade_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_tipo_atividade
+    ADD CONSTRAINT col_tipo_atividade_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_tipo_natureza_vinculo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_tipo_natureza_vinculo
+    ADD CONSTRAINT col_tipo_natureza_vinculo_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_tipo_producao_detalhe_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_tipo_producao_detalhe
+    ADD CONSTRAINT col_tipo_producao_detalhe_pkey PRIMARY KEY (anobase, idtipoproducao, codigo);
+
+
+--
+-- Name: col_tipo_producao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_tipo_producao
+    ADD CONSTRAINT col_tipo_producao_pkey PRIMARY KEY (anobase, codigo);
+
+
+--
+-- Name: col_tipo_status_discente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY col_tipo_status_discente
+    ADD CONSTRAINT col_tipo_status_discente_pkey PRIMARY KEY (anobase, idstatus);
+
+
+--
+-- Name: g_aplicacoes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_aplicacoes
+    ADD CONSTRAINT g_aplicacoes_pkey PRIMARY KEY (codigoaplicacao);
+
+
+--
+-- Name: g_area_subarea_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_area_subarea
+    ADD CONSTRAINT g_area_subarea_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: g_estrutura_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_estrutura
+    ADD CONSTRAINT g_estrutura_pkey PRIMARY KEY (estrutura);
+
+
+--
+-- Name: g_idiomas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_idiomas
+    ADD CONSTRAINT g_idiomas_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: g_ies_pais_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_ies_pais
+    ADD CONSTRAINT g_ies_pais_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: g_menu_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_menu
+    ADD CONSTRAINT g_menu_pkey PRIMARY KEY (indice);
+
+
+--
+-- Name: g_paises_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_paises
+    ADD CONSTRAINT g_paises_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: g_qualis_eventos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_qualis_eventos
+    ADD CONSTRAINT g_qualis_eventos_pkey PRIMARY KEY (idqualis);
+
+
+--
+-- Name: g_qualis_periodicos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_qualis_periodicos
+    ADD CONSTRAINT g_qualis_periodicos_pkey PRIMARY KEY (idqualis);
+
+
+--
+-- Name: g_r_aplicacoes_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_r_aplicacoes_usuarios
+    ADD CONSTRAINT g_r_aplicacoes_usuarios_pkey PRIMARY KEY (idusuario, idaplicacao);
+
+
+--
+-- Name: g_ufs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_ufs
+    ADD CONSTRAINT g_ufs_pkey PRIMARY KEY (sigla);
+
+
+--
+-- Name: g_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY g_usuarios
+    ADD CONSTRAINT g_usuarios_pkey PRIMARY KEY (login);
+
+
+--
+-- Name: icl_docentes_atividade_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_docentes_atividade
+    ADD CONSTRAINT icl_docentes_atividade_pkey PRIMARY KEY (anobase, idprograma, sequencial, idcnpq);
+
+
+--
+-- Name: icl_docentes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_docentes
+    ADD CONSTRAINT icl_docentes_pkey PRIMARY KEY (anobase, idprograma, idcnpq);
+
+
+--
+-- Name: icl_docentes_treinamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_docentes_treinamento
+    ADD CONSTRAINT icl_docentes_treinamento_pkey PRIMARY KEY (anobase, idprograma, mesinicio, mesfim, idcnpq);
+
+
+--
+-- Name: icl_importacao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_importacao
+    ADD CONSTRAINT icl_importacao_pkey PRIMARY KEY (codigotabela);
+
+
+--
+-- Name: icl_log_docentes_atividade_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_docentes_atividade
+    ADD CONSTRAINT icl_log_docentes_atividade_pkey PRIMARY KEY (anobase, idprograma, sequencial, idlog);
+
+
+--
+-- Name: icl_log_docentes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_docentes
+    ADD CONSTRAINT icl_log_docentes_pkey PRIMARY KEY (anobase, idprograma, idlog);
+
+
+--
+-- Name: icl_log_docentes_treinamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_docentes_treinamento
+    ADD CONSTRAINT icl_log_docentes_treinamento_pkey PRIMARY KEY (anobase, idprograma, mesinicio, mesfim, idlog);
+
+
+--
+-- Name: icl_log_pessoal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_pessoal
+    ADD CONSTRAINT icl_log_pessoal_pkey PRIMARY KEY (anobase, idprograma, idlog);
+
+
+--
+-- Name: icl_log_producao_detalhamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_producao_detalhamento
+    ADD CONSTRAINT icl_log_producao_detalhamento_pkey PRIMARY KEY (anobase, idprograma, idtipoproducaodetalhe, idlog);
+
+
+--
+-- Name: icl_log_producao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_producao
+    ADD CONSTRAINT icl_log_producao_pkey PRIMARY KEY (anobase, idprograma, idlog);
+
+
+--
+-- Name: icl_log_r_producao_autor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_r_producao_autor
+    ADD CONSTRAINT icl_log_r_producao_autor_pkey PRIMARY KEY (anobase, idprograma, idsequenciallat, idcnpq, idlog);
+
+
+--
+-- Name: icl_log_sequencial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_log_sequencial
+    ADD CONSTRAINT icl_log_sequencial_pkey PRIMARY KEY (anobase, idprograma);
+
+
+--
+-- Name: icl_pessoal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_pessoal
+    ADD CONSTRAINT icl_pessoal_pkey PRIMARY KEY (anobase, idprograma, idcnpq);
+
+
+--
+-- Name: icl_producao_detalhamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_producao_detalhamento
+    ADD CONSTRAINT icl_producao_detalhamento_pkey PRIMARY KEY (anobase, idprograma, idtipoproducaodetalhe, idsequenciallat);
+
+
+--
+-- Name: icl_producao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_producao
+    ADD CONSTRAINT icl_producao_pkey PRIMARY KEY (anobase, idprograma, idsequenciallat);
+
+
+--
+-- Name: icl_r_ajuste_detalhamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_r_ajuste_detalhamento
+    ADD CONSTRAINT icl_r_ajuste_detalhamento_pkey PRIMARY KEY (anobase, idtipoproducao, idtipoproducaodetalhe, valordiscretoerrado);
+
+
+--
+-- Name: icl_r_producao_autor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_r_producao_autor
+    ADD CONSTRAINT icl_r_producao_autor_pkey PRIMARY KEY (anobase, idprograma, idsequenciallat, idcnpq);
+
+
+--
+-- Name: icl_tipo_pendencia_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY icl_tipo_pendencia
+    ADD CONSTRAINT icl_tipo_pendencia_pkey PRIMARY KEY (idtipopendencia);
+
+
+--
+-- Name: i_col_composicao_areas_avaliacao_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_col_composicao_areas_avaliacao_1 ON col_composicao_areas_avaliacao USING btree (anobase, idareabasica);
+
+
+--
+-- Name: i_col_local_atividade_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_local_atividade_1 ON col_local_atividade USING btree (anobase, codigo);
+
+
+--
+-- Name: i_col_periodicos_area_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_col_periodicos_area_1 ON col_periodicos_area USING btree (anobase, idqualis);
+
+
+--
+-- Name: i_col_periodicos_area_2; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_col_periodicos_area_2 ON col_periodicos_area USING btree (anobase, idareaavaliacao);
+
+
+--
+-- Name: i_col_pessoal_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_pessoal_1 ON col_pessoal USING btree (anobase, idprograma, sequencial);
+
+
+--
+-- Name: i_col_pessoal_2; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_pessoal_2 ON col_pessoal USING btree (anobase, idprograma, documento);
+
+
+--
+-- Name: i_col_pessoal_3; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_col_pessoal_3 ON col_pessoal USING btree (anobase, idprograma, categoria);
+
+
+--
+-- Name: i_col_producao_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_col_producao_1 ON col_producao USING btree (anobase, idqualis);
+
+
+--
+-- Name: i_col_r_cursos_areas_afins_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_r_cursos_areas_afins_1 ON col_r_cursos_areas_afins USING btree (anobase, idprograma, nivel, idareaconhecimento);
+
+
+--
+-- Name: i_col_r_cursos_inscricao_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_r_cursos_inscricao_1 ON col_r_cursos_inscricao USING btree (anobase, idprograma, nivel, idrequisitoinscricao);
+
+
+--
+-- Name: i_col_r_cursos_selecao_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_r_cursos_selecao_1 ON col_r_cursos_selecao USING btree (anobase, idprograma, nivel, idprocedimentoselecao);
+
+
+--
+-- Name: i_col_tipo_atividade_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_col_tipo_atividade_1 ON col_tipo_atividade USING btree (anobase, codigo);
+
+
+--
+-- Name: i_g_area_subarea_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_area_subarea_1 ON g_area_subarea USING btree (codigo);
+
+
+--
+-- Name: i_g_area_subarea_2; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_g_area_subarea_2 ON g_area_subarea USING btree (idgrandearea);
+
+
+--
+-- Name: i_g_area_subarea_3; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_g_area_subarea_3 ON g_area_subarea USING btree (idarea);
+
+
+--
+-- Name: i_g_area_subarea_4; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_g_area_subarea_4 ON g_area_subarea USING btree (idsubarea);
+
+
+--
+-- Name: i_g_area_subarea_5; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_g_area_subarea_5 ON g_area_subarea USING btree (idespecialidade);
+
+
+--
+-- Name: i_g_ies_pais_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_ies_pais_1 ON g_ies_pais USING btree (codigo);
+
+
+--
+-- Name: i_g_ies_pais_2; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX i_g_ies_pais_2 ON g_ies_pais USING btree (sigla);
+
+
+--
+-- Name: i_g_msg_erro_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_msg_erro_1 ON g_msg_erro USING btree (idsqlcode, idsqlstate);
+
+
+--
+-- Name: i_g_paises_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_paises_1 ON g_paises USING btree (codigo);
+
+
+--
+-- Name: i_g_qualis_eventos_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_qualis_eventos_1 ON g_qualis_eventos USING btree (idqualis);
+
+
+--
+-- Name: i_g_qualis_preiodicos_2; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_qualis_preiodicos_2 ON g_qualis_periodicos USING btree (issn);
+
+
+--
+-- Name: i_g_ufs_1; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX i_g_ufs_1 ON g_ufs USING btree (sigla);
+
+
+--
+-- Name: sys_idx_100; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_100 ON col_teses USING btree (iduf);
+
+
+--
+-- Name: sys_idx_102; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_102 ON col_r_teses_orientadores USING btree (anobase, idprograma, idtese, idpessoalorientador);
+
+
+--
+-- Name: sys_idx_104; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_104 ON col_r_teses_orientadores USING btree (anobase, idprograma, idpessoalorientador);
+
+
+--
+-- Name: sys_idx_106; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_106 ON col_r_teses_orientadores USING btree (anobase, idprograma, idtese);
+
+
+--
+-- Name: sys_idx_108; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_108 ON col_r_teses_banca_examinadora USING btree (anobase, idprograma, idtese, idpessoalexaminador);
+
+
+--
+-- Name: sys_idx_110; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_110 ON col_r_teses_banca_examinadora USING btree (anobase, idprograma, idpessoalexaminador);
+
+
+--
+-- Name: sys_idx_112; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_112 ON col_r_teses_banca_examinadora USING btree (anobase, idprograma, idtese);
+
+
+--
+-- Name: sys_idx_114; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_114 ON col_r_teses_agencias USING btree (anobase, idprograma, idtese, idagencia, natureza);
+
+
+--
+-- Name: sys_idx_116; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_116 ON col_r_teses_agencias USING btree (anobase, idprograma, idtese);
+
+
+--
+-- Name: sys_idx_118; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_118 ON col_linhas_pesquisa USING btree (anobase, idprograma, codigo);
+
+
+--
+-- Name: sys_idx_120; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_120 ON col_programas USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_122; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_122 ON col_programas USING btree (iduf);
+
+
+--
+-- Name: sys_idx_124; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_124 ON col_producao_detalhamento USING btree (anobase, idprograma, idproducao, idtipoproducaodetalhe);
+
+
+--
+-- Name: sys_idx_126; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_126 ON col_producao_detalhamento USING btree (anobase, idprograma, idproducao);
+
+
+--
+-- Name: sys_idx_128; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_128 ON col_tipo_producao USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_130; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_130 ON col_r_area_prod_tipo_prod USING btree (anobase, areaproducao, idtipoproducao);
+
+
+--
+-- Name: sys_idx_132; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_132 ON col_r_area_prod_tipo_prod USING btree (anobase, idtipoproducao);
+
+
+--
+-- Name: sys_idx_134; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_134 ON col_tipo_producao_detalhe USING btree (anobase, idtipoproducao, codigo);
+
+
+--
+-- Name: sys_idx_136; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_136 ON col_tipo_producao_detalhe USING btree (anobase, idtipoproducao);
+
+
+--
+-- Name: sys_idx_138; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_138 ON col_info_discentes USING btree (anobase, codigo, detalhe);
+
+
+--
+-- Name: sys_idx_140; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_140 ON col_r_info_discentes_nivel USING btree (anobase, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: sys_idx_142; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_142 ON col_fluxo_discentes USING btree (anobase, idprograma, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: sys_idx_144; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_144 ON col_fluxo_discentes USING btree (anobase, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: sys_idx_146; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_146 ON col_projetos_pesquisa USING btree (anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: sys_idx_148; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_148 ON col_projetos_pesquisa USING btree (anobase, idprograma, idlinhapesquisa);
+
+
+--
+-- Name: sys_idx_150; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_150 ON col_r_projetos_agencias USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa, idagencia, natureza);
+
+
+--
+-- Name: sys_idx_152; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_152 ON col_r_projetos_agencias USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa);
+
+
+--
+-- Name: sys_idx_154; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_154 ON col_r_projetos_pesquisadores USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa, idpessoal);
+
+
+--
+-- Name: sys_idx_156; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_156 ON col_r_projetos_pesquisadores USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_158; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_158 ON col_r_projetos_pesquisadores USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa);
+
+
+--
+-- Name: sys_idx_160; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_160 ON col_procedimento_selecao USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_162; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_162 ON col_requisito_inscricao USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_164; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_164 ON col_r_teses_areas_conhecimento USING btree (anobase, idprograma, idtese, idareaconhecimento);
+
+
+--
+-- Name: sys_idx_166; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_166 ON col_r_teses_areas_conhecimento USING btree (anobase, idprograma, idtese);
+
+
+--
+-- Name: sys_idx_168; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_168 ON col_exportacao USING btree (codigotabela);
+
+
+--
+-- Name: sys_idx_170; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_170 ON col_tipo_natureza_vinculo USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_172; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_172 ON g_aplicacoes USING btree (codigoaplicacao);
+
+
+--
+-- Name: sys_idx_174; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_174 ON g_usuarios USING btree (login);
+
+
+--
+-- Name: sys_idx_176; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_176 ON g_r_aplicacoes_usuarios USING btree (idusuario, idaplicacao);
+
+
+--
+-- Name: sys_idx_178; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_178 ON col_agencias USING btree (anobase, idprograma, codigo);
+
+
+--
+-- Name: sys_idx_180; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_180 ON col_agencias USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_182; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_182 ON col_cursos USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_184; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_184 ON col_cursos USING btree (anobase, idprograma, idpessoalcoordenador);
+
+
+--
+-- Name: sys_idx_186; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_186 ON col_cursos USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_188; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_188 ON col_disciplinas USING btree (anobase, idprograma, sequencial);
+
+
+--
+-- Name: sys_idx_190; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_190 ON col_disciplinas USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_192; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_192 ON col_r_disciplinas_turmas USING btree (anobase, idprograma, iddisciplina, sequencial);
+
+
+--
+-- Name: sys_idx_194; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_194 ON col_r_disciplinas_turmas USING btree (anobase, idprograma, iddisciplina);
+
+
+--
+-- Name: sys_idx_196; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_196 ON col_r_programas_areas_concentr USING btree (anobase, idprograma, codigo);
+
+
+--
+-- Name: sys_idx_198; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_198 ON col_r_programas_areas_concentr USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_200; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_200 ON col_r_disciplinas_turmas_docen USING btree (anobase, idprograma, iddisciplina, idturma, idpessoal);
+
+
+--
+-- Name: sys_idx_202; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_202 ON col_r_disciplinas_turmas_docen USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_204; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_204 ON col_r_disciplinas_turmas_docen USING btree (anobase, idprograma, iddisciplina, idturma);
+
+
+--
+-- Name: sys_idx_206; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_206 ON col_r_disciplinas_areas_concen USING btree (anobase, idprograma, iddisciplina, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_208; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_208 ON col_r_disciplinas_areas_concen USING btree (anobase, idprograma, iddisciplina);
+
+
+--
+-- Name: sys_idx_210; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_210 ON col_r_disciplinas_areas_concen USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_212; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_212 ON col_r_cursos_areas_concentr USING btree (anobase, idprograma, nivel, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_214; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_214 ON col_r_cursos_areas_concentr USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_216; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_216 ON col_r_cursos_areas_concentr USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_218; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_218 ON col_r_producao_area_conhec USING btree (anobase, idprograma, idproducao, idareaconhecimento);
+
+
+--
+-- Name: sys_idx_220; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_220 ON col_r_producao_area_conhec USING btree (anobase, idprograma, idproducao);
+
+
+--
+-- Name: sys_idx_222; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_222 ON col_discentes_autores USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_224; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_224 ON col_tipo_status_discente USING btree (anobase, idstatus);
+
+
+--
+-- Name: sys_idx_226; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_226 ON col_docentes_programa USING btree (anobase, idprograma, idpessoal, mesinicio, mesfim);
+
+
+--
+-- Name: sys_idx_228; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_228 ON col_docentes_programa USING btree (anobase, motivoafastamento);
+
+
+--
+-- Name: sys_idx_230; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_230 ON col_docentes_treinamento USING btree (anobase, idprograma, idpessoal, mesinicio, mesfim);
+
+
+--
+-- Name: sys_idx_232; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_232 ON col_indicadores_nrd USING btree (anobase, idprograma, idpessoal, mes);
+
+
+--
+-- Name: sys_idx_234; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_234 ON col_programas_indicadores USING btree (anobase, idprograma, idestrutura);
+
+
+--
+-- Name: sys_idx_236; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_236 ON col_pessoal_indicadores USING btree (anobase, idprograma, idpessoal, idestrutura);
+
+
+--
+-- Name: sys_idx_238; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_238 ON col_meses USING btree (mes);
+
+
+--
+-- Name: sys_idx_240; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_240 ON g_estrutura USING btree (estrutura);
+
+
+--
+-- Name: sys_idx_242; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_242 ON col_disciplinas_extensao USING btree (anobase, idprograma, iddisciplina);
+
+
+--
+-- Name: sys_idx_245; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_245 ON col_informacoes_complementares USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_247; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_247 ON col_informacoes_complementares USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_249; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_249 ON col_ficha_header USING btree (anobase, idareaavaliacao, idprograma);
+
+
+--
+-- Name: sys_idx_251; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_251 ON col_ficha_quesito USING btree (anobase, idareaavaliacao, idprograma, idquesito);
+
+
+--
+-- Name: sys_idx_253; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_253 ON col_ficha_item USING btree (anobase, idareaavaliacao, idprograma, idquesito, iditem);
+
+
+--
+-- Name: sys_idx_256; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_256 ON col_item_basico USING btree (anobase, idquesito, codigoitembasico);
+
+
+--
+-- Name: sys_idx_258; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_258 ON col_areas_avaliacao USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_260; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_260 ON col_conceitos USING btree (grupo, mnemonico);
+
+
+--
+-- Name: sys_idx_262; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_262 ON col_peso_quesito_aa USING btree (anobase, idareaavaliacao, idquesito);
+
+
+--
+-- Name: sys_idx_264; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_264 ON col_peso_item_aa USING btree (anobase, idareaavaliacao, idquesito, iditem);
+
+
+--
+-- Name: sys_idx_267; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_267 ON col_avaliacao_header USING btree (anobase);
+
+
+--
+-- Name: sys_idx_269; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_269 ON col_egressos USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_271; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_271 ON col_producao_destaques USING btree (anobase, idprograma, idproducao);
+
+
+--
+-- Name: sys_idx_273; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_273 ON col_producao_destaques USING btree (anobase, idprograma, idproducao);
+
+
+--
+-- Name: sys_idx_275; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_275 ON col_periodicos_qualis_geral USING btree (issn, titulo);
+
+
+--
+-- Name: sys_idx_277; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_277 ON col_periodicos_qualis_atualiza USING btree (padraotitulo, padraoissn);
+
+
+--
+-- Name: sys_idx_279; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_279 ON icl_importacao USING btree (codigotabela);
+
+
+--
+-- Name: sys_idx_281; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_281 ON icl_log_sequencial USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_283; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_283 ON icl_tipo_pendencia USING btree (idtipopendencia);
+
+
+--
+-- Name: sys_idx_285; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_285 ON icl_pessoal USING btree (anobase, idprograma, idcnpq);
+
+
+--
+-- Name: sys_idx_287; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_287 ON icl_docentes USING btree (anobase, idprograma, idcnpq);
+
+
+--
+-- Name: sys_idx_289; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_289 ON icl_docentes_treinamento USING btree (anobase, idprograma, mesinicio, mesfim, idcnpq);
+
+
+--
+-- Name: sys_idx_291; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_291 ON icl_docentes_atividade USING btree (anobase, idprograma, sequencial, idcnpq);
+
+
+--
+-- Name: sys_idx_293; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_293 ON icl_log_pessoal USING btree (anobase, idprograma, idlog);
+
+
+--
+-- Name: sys_idx_295; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_295 ON icl_log_docentes USING btree (anobase, idprograma, idlog);
+
+
+--
+-- Name: sys_idx_297; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_297 ON icl_log_docentes_treinamento USING btree (anobase, idprograma, mesinicio, mesfim, idlog);
+
+
+--
+-- Name: sys_idx_299; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_299 ON icl_log_docentes_atividade USING btree (anobase, idprograma, sequencial, idlog);
+
+
+--
+-- Name: sys_idx_301; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_301 ON icl_producao USING btree (anobase, idprograma, idsequenciallat);
+
+
+--
+-- Name: sys_idx_303; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_303 ON icl_r_producao_autor USING btree (anobase, idprograma, idsequenciallat, idcnpq);
+
+
+--
+-- Name: sys_idx_305; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_305 ON icl_producao_detalhamento USING btree (anobase, idprograma, idtipoproducaodetalhe, idsequenciallat);
+
+
+--
+-- Name: sys_idx_307; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_307 ON icl_log_producao USING btree (anobase, idprograma, idlog);
+
+
+--
+-- Name: sys_idx_309; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_309 ON icl_log_r_producao_autor USING btree (anobase, idprograma, idsequenciallat, idcnpq, idlog);
+
+
+--
+-- Name: sys_idx_311; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_311 ON icl_log_producao_detalhamento USING btree (anobase, idprograma, idtipoproducaodetalhe, idlog);
+
+
+--
+-- Name: sys_idx_313; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_313 ON g_qualis_periodicos USING btree (idqualis);
+
+
+--
+-- Name: sys_idx_315; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_315 ON col_periodicos_area USING btree (anobase, idareaavaliacao, idqualis);
+
+
+--
+-- Name: sys_idx_317; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_317 ON col_periodicos_area USING btree (anobase, idareaavaliacao);
+
+
+--
+-- Name: sys_idx_319; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_319 ON g_menu USING btree (indice);
+
+
+--
+-- Name: sys_idx_321; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_321 ON col_r_programa_periodicos USING btree (anobase, idprograma, idqualis);
+
+
+--
+-- Name: sys_idx_322; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_322 ON col_r_programa_periodicos USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_324; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_324 ON col_r_programa_eventos USING btree (anobase, idprograma, idqualis);
+
+
+--
+-- Name: sys_idx_325; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_325 ON col_r_programa_eventos USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_327; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_327 ON g_qualis_eventos USING btree (idqualis);
+
+
+--
+-- Name: sys_idx_328; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_328 ON col_r_orientacoes USING btree (anobase, idprograma, iddiscente, idorientador);
+
+
+--
+-- Name: sys_idx_329; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_329 ON col_r_orientacoes USING btree (anobase, idprograma, iddiscente);
+
+
+--
+-- Name: sys_idx_331; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_331 ON col_r_orientacoes USING btree (anobase, idprograma, idorientador);
+
+
+--
+-- Name: sys_idx_333; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_333 ON icl_r_ajuste_detalhamento USING btree (anobase, idtipoproducao, idtipoproducaodetalhe, valordiscretoerrado);
+
+
+--
+-- Name: sys_idx_335; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_335 ON col_r_cursos_areas_afins USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_337; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_337 ON col_r_cursos_selecao USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_339; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_339 ON col_r_cursos_selecao USING btree (anobase, idprocedimentoselecao);
+
+
+--
+-- Name: sys_idx_341; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_341 ON col_r_cursos_inscricao USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_343; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_343 ON col_r_cursos_inscricao USING btree (anobase, idrequisitoinscricao);
+
+
+--
+-- Name: sys_idx_345; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_345 ON col_pessoal USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_347; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_347 ON col_docentes_ies USING btree (anobase, idtiponaturezavinculo);
+
+
+--
+-- Name: sys_idx_349; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_349 ON col_producao USING btree (anobase, idprograma, idlinhapesquisa);
+
+
+--
+-- Name: sys_idx_351; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_351 ON col_producao USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_353; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_353 ON col_producao USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa);
+
+
+--
+-- Name: sys_idx_355; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_355 ON col_producao USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_357; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_357 ON col_teses USING btree (anobase, idprograma, idlinhapesquisa);
+
+
+--
+-- Name: sys_idx_359; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_359 ON col_teses USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_361; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_361 ON col_teses USING btree (anobase, idprograma, idlinhapesquisa, idprojetopesquisa);
+
+
+--
+-- Name: sys_idx_363; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_363 ON col_teses USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_365; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_365 ON col_r_teses_agencias USING btree (anobase, idprograma, idagencia);
+
+
+--
+-- Name: sys_idx_367; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_367 ON col_linhas_pesquisa USING btree (anobase, idprograma);
+
+
+--
+-- Name: sys_idx_369; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_369 ON col_linhas_pesquisa USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_371; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_371 ON col_fluxo_discentes USING btree (anobase, idprograma, nivel);
+
+
+--
+-- Name: sys_idx_373; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_373 ON col_projetos_pesquisa USING btree (anobase, idprograma, idareaconcentracao);
+
+
+--
+-- Name: sys_idx_375; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_375 ON col_r_projetos_agencias USING btree (anobase, idprograma, idagencia);
+
+
+--
+-- Name: sys_idx_377; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_377 ON col_discentes_autores USING btree (anobase, status);
+
+
+--
+-- Name: sys_idx_46; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_46 ON g_ufs USING btree (sigla);
+
+
+--
+-- Name: sys_idx_48; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_48 ON g_area_subarea USING btree (codigo);
+
+
+--
+-- Name: sys_idx_50; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_50 ON g_ies_pais USING btree (codigo);
+
+
+--
+-- Name: sys_idx_52; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_52 ON g_paises USING btree (codigo);
+
+
+--
+-- Name: sys_idx_54; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_54 ON col_local_atividade USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_56; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_56 ON col_tipo_atividade USING btree (anobase, codigo);
+
+
+--
+-- Name: sys_idx_59; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_59 ON col_r_cursos_areas_afins USING btree (anobase, idprograma, nivel, idareaconhecimento);
+
+
+--
+-- Name: sys_idx_61; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_61 ON col_r_cursos_areas_afins USING btree (idareaconhecimento);
+
+
+--
+-- Name: sys_idx_63; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_63 ON col_r_cursos_selecao USING btree (anobase, idprograma, nivel, idprocedimentoselecao);
+
+
+--
+-- Name: sys_idx_65; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_65 ON col_r_cursos_inscricao USING btree (anobase, idprograma, nivel, idrequisitoinscricao);
+
+
+--
+-- Name: sys_idx_67; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_67 ON col_pessoal USING btree (anobase, idprograma, sequencial);
+
+
+--
+-- Name: sys_idx_69; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_69 ON col_docentes USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_71; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_71 ON col_docentes USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_73; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_73 ON col_pesquisadores USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_75; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_75 ON col_outros USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_77; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_77 ON col_outros USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_79; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_79 ON col_docentes_ies USING btree (anobase, idprograma, idpessoal, mesinicio);
+
+
+--
+-- Name: sys_idx_81; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_81 ON col_docentes_ies USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: sys_idx_83; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_83 ON col_docentes_atividade USING btree (anobase, idprograma, idpessoal, sequencial);
+
+
+--
+-- Name: sys_idx_85; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_85 ON col_motivo_afastamento USING btree (anobase, idafastamento);
+
+
+--
+-- Name: sys_idx_86; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_86 ON col_producao USING btree (anobase, idprograma, sequencial);
+
+
+--
+-- Name: sys_idx_88; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_88 ON g_idiomas USING btree (codigo);
+
+
+--
+-- Name: sys_idx_90; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_90 ON col_r_producao_autor USING btree (anobase, idprograma, idproducao, idautor);
+
+
+--
+-- Name: sys_idx_92; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_92 ON col_r_producao_autor USING btree (anobase, idprograma, idautor);
+
+
+--
+-- Name: sys_idx_94; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_94 ON col_r_producao_autor USING btree (anobase, idprograma, idproducao);
+
+
+--
+-- Name: sys_idx_96; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX sys_idx_96 ON col_teses USING btree (anobase, idprograma, sequencial);
+
+
+--
+-- Name: sys_idx_98; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX sys_idx_98 ON col_teses USING btree (anobase, idprograma, idpessoal);
+
+
+--
+-- Name: col_agencias_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_agencias
+    ADD CONSTRAINT col_agencias_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_cursos_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_cursos
+    ADD CONSTRAINT col_cursos_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoalcoordenador) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_cursos_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_cursos
+    ADD CONSTRAINT col_cursos_anobase_fkey1 FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_discentes_autores_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_discentes_autores
+    ADD CONSTRAINT col_discentes_autores_anobase_fkey FOREIGN KEY (anobase, status) REFERENCES col_tipo_status_discente(anobase, idstatus);
+
+
+--
+-- Name: col_disciplinas_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_disciplinas
+    ADD CONSTRAINT col_disciplinas_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_docentes_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_docentes
+    ADD CONSTRAINT col_docentes_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_docentes_ies_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_docentes_ies
+    ADD CONSTRAINT col_docentes_ies_anobase_fkey FOREIGN KEY (anobase, idtiponaturezavinculo) REFERENCES col_tipo_natureza_vinculo(anobase, codigo);
+
+
+--
+-- Name: col_docentes_ies_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_docentes_ies
+    ADD CONSTRAINT col_docentes_ies_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_docentes_programa_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_docentes_programa
+    ADD CONSTRAINT col_docentes_programa_anobase_fkey FOREIGN KEY (anobase, motivoafastamento) REFERENCES col_motivo_afastamento(anobase, idafastamento);
+
+
+--
+-- Name: col_fluxo_discentes_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_fluxo_discentes
+    ADD CONSTRAINT col_fluxo_discentes_anobase_fkey FOREIGN KEY (anobase, nivel, idinfodiscente, idinfodiscentedetalhe) REFERENCES col_r_info_discentes_nivel(anobase, nivel, idinfodiscente, idinfodiscentedetalhe);
+
+
+--
+-- Name: col_fluxo_discentes_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_fluxo_discentes
+    ADD CONSTRAINT col_fluxo_discentes_anobase_fkey1 FOREIGN KEY (anobase, idprograma, nivel) REFERENCES col_cursos(anobase, idprograma, nivel);
+
+
+--
+-- Name: col_informacoes_complementares_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_informacoes_complementares
+    ADD CONSTRAINT col_informacoes_complementares_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_linhas_pesquisa_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_linhas_pesquisa
+    ADD CONSTRAINT col_linhas_pesquisa_anobase_fkey FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_linhas_pesquisa_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_linhas_pesquisa
+    ADD CONSTRAINT col_linhas_pesquisa_anobase_fkey1 FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_outros_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_outros
+    ADD CONSTRAINT col_outros_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_periodicos_area_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_periodicos_area
+    ADD CONSTRAINT col_periodicos_area_anobase_fkey FOREIGN KEY (anobase, idareaavaliacao) REFERENCES col_areas_avaliacao(anobase, codigo);
+
+
+--
+-- Name: col_pessoal_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_pessoal
+    ADD CONSTRAINT col_pessoal_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_producao_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao
+    ADD CONSTRAINT col_producao_anobase_fkey FOREIGN KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa) REFERENCES col_projetos_pesquisa(anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: col_producao_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao
+    ADD CONSTRAINT col_producao_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_producao_anobase_fkey2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao
+    ADD CONSTRAINT col_producao_anobase_fkey2 FOREIGN KEY (anobase, idprograma, idlinhapesquisa) REFERENCES col_linhas_pesquisa(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_producao_anobase_fkey3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao
+    ADD CONSTRAINT col_producao_anobase_fkey3 FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_producao_destaques_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao_destaques
+    ADD CONSTRAINT col_producao_destaques_anobase_fkey FOREIGN KEY (anobase, idprograma, idproducao) REFERENCES col_producao(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_producao_detalhamento_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_producao_detalhamento
+    ADD CONSTRAINT col_producao_detalhamento_anobase_fkey FOREIGN KEY (anobase, idprograma, idproducao) REFERENCES col_producao(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_programas_iduf_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_programas
+    ADD CONSTRAINT col_programas_iduf_fkey FOREIGN KEY (iduf) REFERENCES g_ufs(sigla);
+
+
+--
+-- Name: col_projetos_pesquisa_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_projetos_pesquisa
+    ADD CONSTRAINT col_projetos_pesquisa_anobase_fkey FOREIGN KEY (anobase, idprograma, idlinhapesquisa) REFERENCES col_linhas_pesquisa(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_projetos_pesquisa_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_projetos_pesquisa
+    ADD CONSTRAINT col_projetos_pesquisa_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_area_prod_tipo_prod_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_area_prod_tipo_prod
+    ADD CONSTRAINT col_r_area_prod_tipo_prod_anobase_fkey FOREIGN KEY (anobase, idtipoproducao) REFERENCES col_tipo_producao(anobase, codigo);
+
+
+--
+-- Name: col_r_cursos_areas_afins_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_afins
+    ADD CONSTRAINT col_r_cursos_areas_afins_anobase_fkey FOREIGN KEY (anobase, idprograma, nivel) REFERENCES col_cursos(anobase, idprograma, nivel);
+
+
+--
+-- Name: col_r_cursos_areas_afins_idareaconhecimento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_afins
+    ADD CONSTRAINT col_r_cursos_areas_afins_idareaconhecimento_fkey FOREIGN KEY (idareaconhecimento) REFERENCES g_area_subarea(codigo);
+
+
+--
+-- Name: col_r_cursos_areas_concentr_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_concentr
+    ADD CONSTRAINT col_r_cursos_areas_concentr_anobase_fkey FOREIGN KEY (anobase, idprograma, nivel) REFERENCES col_cursos(anobase, idprograma, nivel);
+
+
+--
+-- Name: col_r_cursos_areas_concentr_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_areas_concentr
+    ADD CONSTRAINT col_r_cursos_areas_concentr_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_cursos_inscricao_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_inscricao
+    ADD CONSTRAINT col_r_cursos_inscricao_anobase_fkey FOREIGN KEY (anobase, idrequisitoinscricao) REFERENCES col_requisito_inscricao(anobase, codigo);
+
+
+--
+-- Name: col_r_cursos_inscricao_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_inscricao
+    ADD CONSTRAINT col_r_cursos_inscricao_anobase_fkey1 FOREIGN KEY (anobase, idprograma, nivel) REFERENCES col_cursos(anobase, idprograma, nivel);
+
+
+--
+-- Name: col_r_cursos_selecao_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_selecao
+    ADD CONSTRAINT col_r_cursos_selecao_anobase_fkey FOREIGN KEY (anobase, idprocedimentoselecao) REFERENCES col_procedimento_selecao(anobase, codigo);
+
+
+--
+-- Name: col_r_cursos_selecao_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_cursos_selecao
+    ADD CONSTRAINT col_r_cursos_selecao_anobase_fkey1 FOREIGN KEY (anobase, idprograma, nivel) REFERENCES col_cursos(anobase, idprograma, nivel);
+
+
+--
+-- Name: col_r_disciplinas_areas_concen_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_disciplinas_areas_concen
+    ADD CONSTRAINT col_r_disciplinas_areas_concen_anobase_fkey FOREIGN KEY (anobase, idprograma, iddisciplina) REFERENCES col_disciplinas(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_disciplinas_areas_concen_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_disciplinas_areas_concen
+    ADD CONSTRAINT col_r_disciplinas_areas_concen_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_disciplinas_turmas_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_disciplinas_turmas
+    ADD CONSTRAINT col_r_disciplinas_turmas_anobase_fkey FOREIGN KEY (anobase, idprograma, iddisciplina) REFERENCES col_disciplinas(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_disciplinas_turmas_docen_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_disciplinas_turmas_docen
+    ADD CONSTRAINT col_r_disciplinas_turmas_docen_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_disciplinas_turmas_docen_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_disciplinas_turmas_docen
+    ADD CONSTRAINT col_r_disciplinas_turmas_docen_anobase_fkey1 FOREIGN KEY (anobase, idprograma, iddisciplina, idturma) REFERENCES col_r_disciplinas_turmas(anobase, idprograma, iddisciplina, sequencial);
+
+
+--
+-- Name: col_r_orientacoes_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_orientacoes
+    ADD CONSTRAINT col_r_orientacoes_anobase_fkey FOREIGN KEY (anobase, idprograma, idorientador) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_orientacoes_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_orientacoes
+    ADD CONSTRAINT col_r_orientacoes_anobase_fkey1 FOREIGN KEY (anobase, idprograma, iddiscente) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_producao_area_conhec_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_producao_area_conhec
+    ADD CONSTRAINT col_r_producao_area_conhec_anobase_fkey FOREIGN KEY (anobase, idprograma, idproducao) REFERENCES col_producao(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_producao_autor_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_producao_autor
+    ADD CONSTRAINT col_r_producao_autor_anobase_fkey FOREIGN KEY (anobase, idprograma, idautor) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_producao_autor_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_producao_autor
+    ADD CONSTRAINT col_r_producao_autor_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idproducao) REFERENCES col_producao(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_programa_eventos_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_programa_eventos
+    ADD CONSTRAINT col_r_programa_eventos_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_r_programa_periodicos_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_programa_periodicos
+    ADD CONSTRAINT col_r_programa_periodicos_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_r_programas_areas_concentr_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_programas_areas_concentr
+    ADD CONSTRAINT col_r_programas_areas_concentr_anobase_fkey FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_r_projetos_agencias_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_projetos_agencias
+    ADD CONSTRAINT col_r_projetos_agencias_anobase_fkey FOREIGN KEY (anobase, idprograma, idagencia) REFERENCES col_agencias(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_projetos_agencias_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_projetos_agencias
+    ADD CONSTRAINT col_r_projetos_agencias_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa) REFERENCES col_projetos_pesquisa(anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: col_r_projetos_pesquisadores_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_projetos_pesquisadores
+    ADD CONSTRAINT col_r_projetos_pesquisadores_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_projetos_pesquisadores_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_projetos_pesquisadores
+    ADD CONSTRAINT col_r_projetos_pesquisadores_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa) REFERENCES col_projetos_pesquisa(anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: col_r_teses_agencias_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_agencias
+    ADD CONSTRAINT col_r_teses_agencias_anobase_fkey FOREIGN KEY (anobase, idprograma, idtese) REFERENCES col_teses(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_teses_agencias_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_agencias
+    ADD CONSTRAINT col_r_teses_agencias_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idagencia) REFERENCES col_agencias(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_r_teses_areas_conhecimento_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_areas_conhecimento
+    ADD CONSTRAINT col_r_teses_areas_conhecimento_anobase_fkey FOREIGN KEY (anobase, idprograma, idtese) REFERENCES col_teses(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_teses_banca_examinadora_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_banca_examinadora
+    ADD CONSTRAINT col_r_teses_banca_examinadora_anobase_fkey FOREIGN KEY (anobase, idprograma, idtese) REFERENCES col_teses(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_teses_banca_examinadora_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_banca_examinadora
+    ADD CONSTRAINT col_r_teses_banca_examinadora_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idpessoalexaminador) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_teses_orientadores_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_orientadores
+    ADD CONSTRAINT col_r_teses_orientadores_anobase_fkey FOREIGN KEY (anobase, idprograma, idpessoalorientador) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_r_teses_orientadores_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_r_teses_orientadores
+    ADD CONSTRAINT col_r_teses_orientadores_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idtese) REFERENCES col_teses(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_teses_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_anobase_fkey FOREIGN KEY (anobase, idprograma, idlinhapesquisa) REFERENCES col_linhas_pesquisa(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_teses_anobase_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_anobase_fkey1 FOREIGN KEY (anobase, idprograma, idpessoal) REFERENCES col_pessoal(anobase, idprograma, sequencial);
+
+
+--
+-- Name: col_teses_anobase_fkey2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_anobase_fkey2 FOREIGN KEY (anobase, idprograma, idareaconcentracao) REFERENCES col_r_programas_areas_concentr(anobase, idprograma, codigo);
+
+
+--
+-- Name: col_teses_anobase_fkey3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_anobase_fkey3 FOREIGN KEY (anobase, idprograma) REFERENCES col_programas(anobase, codigo);
+
+
+--
+-- Name: col_teses_anobase_fkey4; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_anobase_fkey4 FOREIGN KEY (anobase, idprograma, idlinhapesquisa, idprojetopesquisa) REFERENCES col_projetos_pesquisa(anobase, idprograma, idlinhapesquisa, codigo);
+
+
+--
+-- Name: col_teses_iduf_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_teses
+    ADD CONSTRAINT col_teses_iduf_fkey FOREIGN KEY (iduf) REFERENCES g_ufs(sigla);
+
+
+--
+-- Name: col_tipo_producao_detalhe_anobase_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY col_tipo_producao_detalhe
+    ADD CONSTRAINT col_tipo_producao_detalhe_anobase_fkey FOREIGN KEY (anobase, idtipoproducao) REFERENCES col_tipo_producao(anobase, codigo);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: col_producao; Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON TABLE col_producao FROM PUBLIC;
+REVOKE ALL ON TABLE col_producao FROM postgres;
+GRANT ALL ON TABLE col_producao TO postgres;
+GRANT ALL ON TABLE col_producao TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
